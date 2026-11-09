@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ماكينات تيار مباشر ومتردد | امتحان تفاعلي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{
+  --primary:#522B5B; --primary-dark:#2B124C; --mint:#854F6C; --mint-dark:#6A3A56;
+  --bg:#FBE4D8; --ink:#190019; --muted:#854F6C; --card:#FFF9F5;
+  --danger:#C0425E; --gold:#DFB6B2; --radius:18px;
+  --shadow:0 10px 30px rgba(82,43,91,.15);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Cairo',sans-serif; background:var(--bg); color:var(--ink);
+  min-height:100vh; overflow-x:hidden; position:relative;
+}
+.en{font-family:'Outfit',sans-serif; direction:ltr; unicode-bidi:isolate; display:inline-block}
+/* ===== floating bubbles ===== */
+.bubbles{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bubble{position:absolute;bottom:-120px;border-radius:50%;opacity:.25;
+  background:radial-gradient(circle at 30% 30%, rgba(82,43,91,.5), rgba(82,43,91,.05));
+  animation:rise linear infinite;}
+.bubble:nth-child(2n){background:radial-gradient(circle at 30% 30%, rgba(133,79,108,.5), rgba(133,79,108,.05))}
+.bubble:nth-child(3n){background:radial-gradient(circle at 30% 30%, rgba(223,182,178,.55), rgba(223,182,178,.05))}
+@keyframes rise{
+  0%{transform:translateY(0) translateX(0) scale(1)}
+  50%{transform:translateY(-55vh) translateX(40px) scale(1.15)}
+  100%{transform:translateY(-120vh) translateX(-30px) scale(.9)}
+}
+/* ===== screens ===== */
+.screen{display:none;min-height:100vh;position:relative;z-index:1;
+  flex-direction:column;align-items:center;padding:24px 16px 120px;}
+.screen.active{display:flex;animation:screenIn .55s cubic-bezier(.22,1,.36,1)}
+@keyframes screenIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.wrap{width:100%;max-width:820px}
+/* ===== buttons ===== */
+.btn{font-family:'Cairo',sans-serif;border:none;cursor:pointer;border-radius:14px;
+  padding:15px 26px;font-size:17px;font-weight:800;transition:all .25s ease;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;
+  box-shadow:0 8px 22px rgba(82,43,91,.35)}
+.btn-primary:hover{transform:translateY(-4px);box-shadow:0 14px 30px rgba(82,43,91,.45)}
+.btn-ghost{background:var(--card);color:var(--primary);border:2px solid var(--primary)}
+.btn-ghost:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.btn-mint{background:linear-gradient(135deg,var(--mint),var(--mint-dark));color:#fff;
+  box-shadow:0 8px 22px rgba(133,79,108,.35)}
+.btn-mint:hover{transform:translateY(-4px)}
+.btn-wa{background:linear-gradient(135deg,#522B5B,#2B124C);color:#fff;box-shadow:0 8px 20px rgba(82,43,91,.35)}
+.btn-wa:hover{transform:translateY(-4px)}
+.btn-tg{background:linear-gradient(135deg,#854F6C,#522B5B);color:#fff;box-shadow:0 8px 20px rgba(133,79,108,.35)}
+.btn-tg:hover{transform:translateY(-4px)}
+.btn-back{background:var(--card);color:var(--muted);border:2px solid #DFB6B2;font-size:14px;padding:9px 18px}
+.btn-back:hover{border-color:var(--primary);color:var(--primary)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none!important}
+/* ===== start screen ===== */
+.hero{text-align:center;margin-top:6vh;animation:screenIn .7s cubic-bezier(.22,1,.36,1)}
+.hero .logo{font-size:64px;margin-bottom:6px}
+.hero h1{font-size:clamp(26px,6vw,42px);font-weight:900;color:var(--primary);line-height:1.35}
+.hero .sub{color:var(--muted);font-size:16px;margin:10px 0 26px}
+.name-box{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:20px;display:flex;flex-direction:column;gap:14px;max-width:440px;margin:0 auto 22px}
+.name-box input{font-family:'Cairo',sans-serif;border:2px solid #EBCBC5;border-radius:12px;
+  padding:13px 16px;font-size:16px;outline:none;text-align:center;transition:.25s}
+.name-box input:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(82,43,91,.12)}
+.start-actions{display:flex;flex-direction:column;gap:14px;max-width:440px;margin:0 auto}
+.verse{margin:26px auto 0;max-width:440px;text-align:center;padding:18px 20px;border-radius:var(--radius);
+  background:var(--card);border:2px solid var(--gold);box-shadow:var(--shadow);position:relative}
+.verse::before,.verse::after{content:"✦";position:absolute;top:50%;transform:translateY(-50%);color:var(--mint);font-size:18px;opacity:.7}
+.verse::before{right:12px}.verse::after{left:12px}
+.verse-text{font-size:clamp(22px,5vw,28px);font-weight:800;color:var(--primary);line-height:1.8}
+.dev-contact{display:flex;gap:22px;justify-content:center;margin-top:28px}
+.social{position:relative;width:66px;height:66px;border-radius:50%;display:inline-flex;align-items:center;
+  justify-content:center;text-decoration:none;color:#fff;animation:socFloat 3s ease-in-out infinite;
+  transition:transform .3s cubic-bezier(.22,1,.36,1)}
+.social svg{width:34px;height:34px;position:relative;z-index:1;animation:socWiggle 4s ease-in-out infinite}
+.social::before,.social::after{content:"";position:absolute;inset:0;border-radius:50%;background:inherit;
+  z-index:0;opacity:.55;animation:socRing 2.4s ease-out infinite}
+.social::after{animation-delay:1.2s}
+.social.wa{background:#25D366;box-shadow:0 10px 24px rgba(37,211,102,.45)}
+.social.tg{background:#229ED9;box-shadow:0 10px 24px rgba(34,158,217,.45);animation-delay:-1.5s}
+.social:hover{animation-play-state:paused;transform:scale(1.18) rotate(-8deg)}
+@keyframes socFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+@keyframes socWiggle{0%,86%,100%{transform:rotate(0)}89%{transform:rotate(-14deg)}92%{transform:rotate(12deg)}95%{transform:rotate(-8deg)}}
+@keyframes socRing{0%{transform:scale(1);opacity:.5}100%{transform:scale(1.75);opacity:0}}
+@media(prefers-reduced-motion:reduce){.social,.social svg,.social::before,.social::after{animation:none}}
+.hex-wrap{display:block;width:100%;filter:drop-shadow(0 10px 14px rgba(43,18,76,.35));
+  animation:hexFloat 3.2s ease-in-out infinite;transition:transform .3s}
+.hex-wrap.b{animation-delay:-1.6s;filter:drop-shadow(0 10px 14px rgba(133,79,108,.45))}
+.hex-wrap.c{animation-delay:-.8s;filter:drop-shadow(0 10px 14px rgba(25,0,25,.4))}
+.hex-wrap:hover{transform:scale(1.06) rotate(-1deg);animation-play-state:paused}
+.hex{position:relative;overflow:hidden;width:100%;color:#fff;border:none;padding:22px 40px;font-size:19px;
+  text-shadow:0 1px 2px rgba(25,0,25,.4);clip-path:polygon(9% 0,91% 0,100% 50%,91% 100%,9% 100%,0 50%);
+  background-size:200% 200%;animation:hexPulse 4s ease-in-out infinite,hexFlow 6s ease-in-out infinite}
+.hex>*{position:relative;z-index:1}
+.hex::after{content:"";position:absolute;top:0;bottom:0;width:40%;left:-60%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.5),transparent);
+  transform:skewX(-20deg);animation:hexShine 3.4s ease-in-out infinite}
+.hex-review{background-image:linear-gradient(135deg,#522B5B,#2B124C,#854F6C,#522B5B)}
+.hex-prob{background-image:linear-gradient(135deg,#190019,#2B124C,#522B5B,#190019);animation-delay:-1s,-4s}
+.hex-prob::after{animation-delay:.6s}
+.hex-exam{background-image:linear-gradient(135deg,#854F6C,#C98A8E,#DFB6B2,#854F6C);animation-delay:-2s,-3s}
+.hex-exam::after{animation-delay:1.3s}
+.hex:active{filter:brightness(.92)}
+@keyframes hexPulse{
+  0%,100%{clip-path:polygon(9% 0,91% 0,100% 50%,91% 100%,9% 100%,0 50%)}
+  50%{clip-path:polygon(15% 0,85% 0,100% 50%,85% 100%,15% 100%,0 50%)}}
+@keyframes hexFlow{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes hexFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes hexShine{0%,55%{left:-60%}100%{left:130%}}
+@media(prefers-reduced-motion:reduce){.hex-wrap,.hex,.hex::after{animation:none}}
+/* ===== review screen ===== */
+.rev-head{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.rev-head h2{font-size:24px;font-weight:900;color:var(--primary);flex:1;min-width:200px}
+.rev-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:24px;margin-bottom:20px;animation:screenIn .5s ease both}
+.rev-card h3{font-size:20px;font-weight:900;color:var(--ink);margin-bottom:12px;
+  display:flex;align-items:center;gap:8px}
+.rev-card h3 .ic{color:var(--primary)}
+.rev-card ul{padding-right:20px;line-height:2.1;font-size:16px}
+.formula{background:#F3DCDC;border-right:5px solid var(--primary);border-radius:12px;
+  padding:14px 18px;margin:12px 0;font-size:19px;color:var(--primary-dark);font-weight:700}
+.formula.mint{background:#FBE4D8;border-right-color:var(--mint);color:var(--mint-dark)}
+.law{background:linear-gradient(135deg,#FBE4D8,#F6D5CC);border:1.5px solid var(--gold);
+  border-radius:12px;padding:12px 16px;margin:12px 0;font-weight:700}
+.hl{background:linear-gradient(transparent 55%, rgba(223,182,178,.55) 55%);padding:0 3px;font-weight:800}
+.note{background:#FCEDE6;border-radius:12px;padding:12px 16px;margin:12px 0;color:var(--muted);font-size:15px}
+.problem{background:#FFF6F1;border:1.5px solid #EBCBC5;border-radius:14px;padding:18px;margin:14px 0}
+.problem .ptitle{font-weight:900;color:var(--primary);margin-bottom:8px;font-size:17px}
+.step{font-family:'Outfit',sans-serif;direction:ltr;text-align:left;background:#190019;color:#fff;
+  border-radius:10px;padding:10px 14px;margin:8px 0;font-size:16px;letter-spacing:.3px}
+.step .res{color:#DFB6B2;font-weight:800}
+.rev-art{text-align:center;margin:14px 0}
+.rev-art svg{max-width:100%;height:auto}
+.fixed-cta{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:50;
+  display:flex;gap:10px;width:min(94%,560px)}
+.fixed-cta .btn{flex:1;padding:15px 10px;font-size:15px;box-shadow:0 12px 30px rgba(133,79,108,.4);
+  animation:floatCta 2.6s ease-in-out infinite}
+@keyframes floatCta{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.btn-explain{font-family:'Cairo',sans-serif;margin-top:12px;border:none;cursor:pointer;color:#fff;font-weight:800;
+  font-size:14px;padding:9px 18px;border-radius:50px;background:linear-gradient(135deg,#854F6C,#522B5B);
+  box-shadow:0 6px 14px rgba(82,43,91,.3);transition:transform .25s,box-shadow .25s}
+.btn-explain:hover{transform:translateY(-3px);box-shadow:0 10px 20px rgba(82,43,91,.4)}
+.explain{display:none;margin-top:14px;background:#FFF3EC;border-right:5px solid var(--mint);border-radius:12px;
+  padding:16px 18px;font-size:15px;line-height:2}
+.explain.open{display:block;animation:screenIn .4s ease}
+.explain h4{color:var(--primary);font-size:16px;font-weight:900;margin:6px 0 4px}
+.explain .ex-steps{padding-right:22px;margin:6px 0}
+.explain .ex-steps li{margin-bottom:10px}
+.explain .en{background:#F1D5CF;border-radius:6px;padding:0 6px;color:var(--ink);font-weight:600}
+.ex-tip{background:#FBE4D8;border:1.5px dashed var(--gold);border-radius:10px;padding:10px 14px;margin-top:8px;font-size:14.5px}
+/* ===== exam screen ===== */
+.exam-top{width:100%;max-width:820px;background:var(--card);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:16px 18px;margin-bottom:16px}
+.exam-meta{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.pill{background:#F3DCDC;color:var(--primary);border-radius:50px;padding:5px 14px;font-weight:800;font-size:14px}
+.pill.calc{background:#FBE4D8;color:var(--mint-dark)}
+.timer{font-family:'Outfit',sans-serif;direction:ltr;font-weight:800;font-size:18px;color:var(--ink);
+  background:#FCEDE6;border-radius:10px;padding:5px 14px}
+.progress{height:10px;background:#F1D5CF;border-radius:50px;overflow:hidden}
+.progress>div{height:100%;width:0;background:linear-gradient(90deg,var(--primary),var(--mint));
+  border-radius:50px;transition:width .5s cubic-bezier(.22,1,.36,1)}
+.q-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:26px;width:100%;max-width:820px}
+.q-tag{display:inline-block;border-radius:50px;padding:4px 14px;font-size:13px;font-weight:800;margin-bottom:12px}
+.q-tag.calc{background:#FBE4D8;color:var(--mint-dark)}
+.q-tag.theo{background:#F3DCDC;color:var(--primary)}
+.q-text{font-family:'Outfit',sans-serif;direction:ltr;text-align:left;font-size:19px;font-weight:700;
+  line-height:1.6;margin-bottom:20px;color:var(--ink)}
+.choices{display:flex;flex-direction:column;gap:12px}
+.choice{font-family:'Outfit',sans-serif;direction:ltr;text-align:left;background:#FFF3EC;
+  border:2px solid #EBCBC5;border-radius:14px;padding:15px 18px;font-size:16px;font-weight:600;
+  cursor:pointer;transition:all .25s;display:flex;align-items:center;gap:12px;color:var(--ink);
+  animation:choiceIn .4s ease both}
+.choice:nth-child(2){animation-delay:.06s}.choice:nth-child(3){animation-delay:.12s}.choice:nth-child(4){animation-delay:.18s}
+@keyframes choiceIn{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:translateX(0)}}
+.choice .letter{width:30px;height:30px;border-radius:8px;background:#EBCBC5;color:var(--muted);
+  display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;transition:.25s}
+.choice:hover{border-color:var(--primary);transform:translateX(-4px)}
+.choice:hover .letter{background:var(--primary);color:#fff}
+.choice.sel{border-color:var(--mint);background:#F6E3E6}
+.choice.sel .letter{background:var(--mint);color:#fff}
+.exam-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  width:100%;max-width:820px;margin-top:16px;flex-wrap:wrap}
+.dots{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;flex:1;min-width:220px}
+.dot{width:34px;height:34px;border-radius:10px;border:2px solid #DFB6B2;background:var(--card);color:var(--muted);
+  font-weight:800;cursor:pointer;font-family:'Outfit',sans-serif;font-size:13px;transition:.2s}
+.dot.done{background:var(--mint);border-color:var(--mint);color:#fff}
+.dot.cur{border-color:var(--primary);color:var(--primary);box-shadow:0 0 0 3px rgba(82,43,91,.15)}
+.submit-bar{width:100%;max-width:820px;margin-top:18px;text-align:center}
+.submit-bar .btn{width:100%;font-size:18px;padding:17px}
+.hint-row{margin:-6px 0 18px}
+.btn-hint{font-family:'Cairo',sans-serif;border:2px solid var(--gold);background:var(--card);color:var(--primary);
+  font-weight:800;font-size:13px;padding:6px 14px;border-radius:50px;cursor:pointer;transition:.25s}
+.btn-hint:hover{background:var(--primary);color:#fff;border-color:var(--primary);transform:translateY(-2px)}
+.btn-hint.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+.hint-box{display:none;margin-top:10px;background:#FFF3EC;border-right:5px solid var(--mint);border-radius:12px;
+  padding:12px 16px;font-size:15px;line-height:1.9;font-weight:600;color:var(--ink)}
+.hint-box.open{display:block;animation:screenIn .35s ease}
+/* ===== result screen ===== */
+.res-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:30px 24px;text-align:center;width:100%;max-width:820px}
+.score-ring{position:relative;width:190px;height:190px;margin:10px auto 4px}
+.score-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:#F1D5CF;stroke-width:13}
+.ring-fg{fill:none;stroke:url(#gradRing);stroke-width:13;stroke-linecap:round;
+  stroke-dasharray:327;stroke-dashoffset:327;transition:stroke-dashoffset 1.6s cubic-bezier(.22,1,.36,1)}
+.score-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:'Outfit',sans-serif;font-size:42px;font-weight:800;color:var(--primary)}
+.stats{display:flex;gap:12px;justify-content:center;margin:16px 0;flex-wrap:wrap}
+.stat{background:#FCEDE6;border-radius:14px;padding:12px 22px;font-weight:800}
+.stat.ok{color:var(--mint-dark)} .stat.bad{color:var(--danger)}
+.grade-msg{font-size:21px;font-weight:900;margin:10px 0;line-height:1.7}
+.cert-box{margin:22px 0}
+.cert-box canvas{width:100%;max-width:640px;border-radius:14px;box-shadow:0 14px 40px rgba(0,0,0,.15)}
+.ask-box{background:#FBE4D8;border:2px dashed var(--mint);border-radius:14px;padding:18px;margin:20px 0;font-weight:700}
+.review-list{text-align:right;margin-top:10px}
+.rv-item{background:#FFF6F1;border:1.5px solid #EBCBC5;border-radius:14px;padding:18px;margin-bottom:14px}
+.rv-item .rv-q{font-family:'Outfit',sans-serif;direction:ltr;text-align:left;font-weight:700;font-size:16px;margin-bottom:10px}
+.rv-item .rv-ch{font-family:'Outfit',sans-serif;direction:ltr;text-align:left;padding:8px 12px;border-radius:10px;
+  margin:5px 0;font-size:15px;background:var(--card);border:1.5px solid #EBCBC5}
+.rv-item .rv-ch.correct{background:#F6E3E6;border-color:var(--mint);color:var(--mint-dark);font-weight:700}
+.rv-item .rv-ch.wrongpick{background:#FBE0E4;border-color:var(--danger);color:var(--danger);font-weight:700}
+.rv-exp{background:#FBE4D8;border-radius:10px;padding:10px 14px;margin-top:10px;font-size:14.5px;line-height:1.9}
+.rv-exp .en{background:#190019;color:#fff;border-radius:8px;padding:2px 10px;font-size:14px}
+.verdict{font-weight:900;font-size:15px;margin-bottom:6px}
+#confettiCanvas{position:fixed;inset:0;z-index:999;pointer-events:none;display:none}
+@media(max-width:600px){
+  .exam-nav{flex-direction:column}
+  .fixed-cta{flex-direction:column}
+  .score-num{font-size:34px}
+}
+</style>
+</head>
+<body>
+
+<div class="bubbles" id="bubbles"></div>
+<canvas id="confettiCanvas"></canvas>
+
+<!-- ============ START SCREEN ============ -->
+<section id="screen-start" class="screen active">
+  <div class="wrap">
+    <div class="hero">
+      <div class="logo">⚡</div>
+      <h1>ماكينات تيار مباشر ومتردد</h1>
+    </div>
+    <div class="name-box">
+      <input type="text" id="studentName" placeholder="✍️ اكتب اسمك هنا (اختياري — هيظهر في الشهادة)">
+      <div class="hex-wrap"><button class="btn hex hex-review" onclick="startReview()">📚 المراجعة الشاملة الأول</button></div>
+      <div class="hex-wrap c"><button class="btn hex hex-prob" onclick="startProblems()">🧮 المسائل</button></div>
+      <div class="hex-wrap b"><button class="btn hex hex-exam" onclick="startExam()">🚀 ابدأ الامتحان مباشرة</button></div>
+    </div>
+    <div class="verse">
+      <div class="verse-text">﴿ وَقُل رَّبِّ زِدْنِي عِلْمًا ﴾</div>
+    </div>
+    <div class="dev-contact">
+      <a class="social wa" href="https://wa.me/201091139568" target="_blank" rel="noopener" aria-label="واتساب" title="واتساب"><svg viewBox="0 0 24 24" fill="#fff"><path d="M17.5 14.4c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.14-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.5 0 1.47 1.07 2.9 1.22 3.1.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.7.62.71.23 1.36.2 1.87.12.57-.08 1.76-.72 2-1.41.25-.7.25-1.29.18-1.41-.07-.13-.27-.2-.57-.35M12.04 21.79h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.88 9.9-9.88a9.83 9.83 0 0 1 6.99 2.9 9.83 9.83 0 0 1 2.89 7c0 5.45-4.44 9.87-9.89 9.87M20.5 3.49A11.8 11.8 0 0 0 12.04 0C5.5 0 .16 5.33.16 11.89c0 2.1.55 4.14 1.59 5.95L.07 24l6.3-1.65a11.9 11.9 0 0 0 5.68 1.45h.01c6.55 0 11.89-5.33 11.89-11.89 0-3.18-1.24-6.16-3.45-8.42"/></svg></a>
+      <a class="social tg" href="https://t.me/HRBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" target="_blank" rel="noopener" aria-label="تيليجرام" title="تيليجرام"><svg viewBox="0 0 24 24" fill="#fff"><path d="M9.04 15.94l-.38 5.35c.54 0 .78-.23 1.06-.5l2.55-2.44 5.28 3.87c.97.53 1.66.25 1.92-.9L22.9 4.62c.31-1.43-.52-1.99-1.46-1.64L1.7 10.6c-1.4.54-1.38 1.32-.24 1.67l4.93 1.54L18.1 6.6c.56-.37 1.07-.17.65.2"/></svg></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ REVIEW SCREEN ============ -->
+<section id="screen-review" class="screen">
+  <div class="wrap">
+    <div class="rev-head">
+      <button class="btn btn-back" onclick="showScreen('screen-start')">→ رجوع</button>
+      <h2>📚 المراجعة الشاملة الأول</h2>
+    </div>
+
+    <!-- 1. Three-phase characteristics -->
+    <div class="rev-card">
+      <h3><span class="ic">⚡</span> Three-Phase System — الخصائص الأساسية</h3>
+      <ul>
+        <li><span class="hl">نفس القمة</span> → <span class="en">The same peak value</span></li>
+        <li><span class="hl">نفس التردد</span> → <span class="en">The same frequency</span></li>
+        <li><span class="hl">إزاحة الطور بين كل فولت والتاني = 120°</span> → <span class="en">Phase shift between each voltage is 120°</span></li>
+      </ul>
+      <div class="rev-art">
+        <svg width="420" height="150" viewBox="0 0 420 150">
+          <line x1="20" y1="75" x2="400" y2="75" stroke="#DFB6B2" stroke-width="2"/>
+          <path d="M20 75 Q52 15 85 75 T150 75 T215 75 T280 75 T345 75 T410 75" fill="none" stroke="#522B5B" stroke-width="3"/>
+          <path d="M20 75 Q85 15 150 75 T280 75 T410 75" fill="none" stroke="#854F6C" stroke-width="3" transform="translate(-32,0)"/>
+          <path d="M20 75 Q85 135 150 75 T280 75 T410 75" fill="none" stroke="#C0425E" stroke-width="3" transform="translate(-32,0)"/>
+          <text x="330" y="30" fill="#522B5B" font-size="13" font-family="Outfit">V<tspan dy="3" font-size="9">AB</tspan></text>
+          <text x="330" y="60" fill="#854F6C" font-size="13" font-family="Outfit">V<tspan dy="3" font-size="9">BC</tspan></text>
+          <text x="330" y="125" fill="#C0425E" font-size="13" font-family="Outfit">V<tspan dy="3" font-size="9">CA</tspan></text>
+        </svg>
+      </div>
+      <div class="note">💛 لاحظ: الثلاث موجات <b>نفس القيمة العظمى</b> و<b>نفس التردد</b>، بس مزاحين على بعض 120 درجة.</div>
+    </div>
+
+    <!-- 2. Star -->
+    <div class="rev-card">
+      <h3><span class="ic">⭐</span> Star System — توصيلة النجمة</h3>
+      <div class="rev-art">
+        <svg width="300" height="220" viewBox="0 0 300 220">
+          <line x1="150" y1="110" x2="150" y2="30" stroke="#522B5B" stroke-width="3"/>
+          <line x1="150" y1="110" x2="75" y2="180" stroke="#854F6C" stroke-width="3"/>
+          <line x1="150" y1="110" x2="225" y2="180" stroke="#C0425E" stroke-width="3"/>
+          <circle cx="150" cy="30" r="12" fill="#FFF9F5" stroke="#522B5B" stroke-width="3"/>
+          <text x="150" y="35" text-anchor="middle" font-size="12" font-family="Outfit">~</text>
+          <circle cx="75" cy="180" r="12" fill="#FFF9F5" stroke="#854F6C" stroke-width="3"/>
+          <text x="75" y="185" text-anchor="middle" font-size="12" font-family="Outfit">~</text>
+          <circle cx="225" cy="180" r="12" fill="#FFF9F5" stroke="#C0425E" stroke-width="3"/>
+          <text x="225" y="185" text-anchor="middle" font-size="12" font-family="Outfit">~</text>
+          <circle cx="150" cy="110" r="5" fill="#190019"/>
+          <text x="168" y="105" font-size="13" font-weight="bold" font-family="Outfit">N</text>
+          <text x="165" y="25" font-size="13" fill="#522B5B" font-weight="bold" font-family="Outfit">A</text>
+          <text x="55" y="205" font-size="13" fill="#854F6C" font-weight="bold" font-family="Outfit">B</text>
+          <text x="240" y="205" font-size="13" fill="#C0425E" font-weight="bold" font-family="Outfit">C</text>
+        </svg>
+      </div>
+      <ul>
+        <li><b>Line Voltages:</b> <span class="en">V_AB , V_BC , V_CA</span></li>
+        <li><b>Phase Voltages:</b> <span class="en">V_AN , V_BN , V_CN</span></li>
+      </ul>
+      <div class="law">⭐ <span class="en">V_L = √3 × V_ph</span> — الفولت الخط = جذر 3 × فولت الطور</div>
+      <div class="law">⭐ <span class="en">I_L = I_ph</span> — في النجمة التيار الخط بيساوي تيار الطور</div>
+      <div class="note">💛 لاتنسى: <b>الجهد</b> هو اللي بيتضرب في √3 في النجمة، التيار زي ما هو.</div>
+    </div>
+
+    <!-- 3. Delta -->
+    <div class="rev-card">
+      <h3><span class="ic">🔺</span> Delta System — توصيلة المثلث</h3>
+      <div class="rev-art">
+        <svg width="300" height="230" viewBox="0 0 300 230">
+          <polygon points="150,25 60,185 240,185" fill="none" stroke="#522B5B" stroke-width="3"/>
+          <circle cx="150" cy="25" r="12" fill="#FFF9F5" stroke="#522B5B" stroke-width="3"/>
+          <text x="150" y="30" text-anchor="middle" font-size="12" font-family="Outfit">~</text>
+          <circle cx="60" cy="185" r="12" fill="#FFF9F5" stroke="#854F6C" stroke-width="3"/>
+          <text x="60" y="190" text-anchor="middle" font-size="12" font-family="Outfit">~</text>
+          <circle cx="240" cy="185" r="12" fill="#FFF9F5" stroke="#C0425E" stroke-width="3"/>
+          <text x="240" y="190" text-anchor="middle" font-size="12" font-family="Outfit">~</text>
+          <text x="150" y="10" text-anchor="middle" font-size="14" font-weight="bold" fill="#522B5B" font-family="Outfit">A</text>
+          <text x="42" y="210" font-size="14" font-weight="bold" fill="#854F6C" font-family="Outfit">B</text>
+          <text x="255" y="210" font-size="14" font-weight="bold" fill="#C0425E" font-family="Outfit">C</text>
+        </svg>
+      </div>
+      <ul>
+        <li><b>Line Currents:</b> <span class="en">I_A , I_B , I_C</span></li>
+        <li><b>Phase Currents:</b> <span class="en">I_AB , I_BC , I_CA</span></li>
+      </ul>
+      <div class="law">⭐ <span class="en">I_L = √3 × I_ph</span> — التيار الخط = جذر 3 × تيار الطور</div>
+      <div class="law">⭐ <span class="en">V_L = V_ph</span> — في المثلث الفولت الخط بيساوي فولت الطور</div>
+      <div class="note">💛 العكس: في المثلث <b>التيار</b> هو اللي بيتضرب في √3، والجهد زي ما هو.</div>
+    </div>
+
+    <!-- 4. Power -->
+    <div class="rev-card">
+      <h3><span class="ic">🧮</span> Power in Three-Phase System — القدرة ثلاثية الأطوار</h3>
+      <div class="formula en">P = √3 × V_L × I_L × cos θ &nbsp;=&nbsp; 3 × V_ph × I_ph × cos θ &nbsp;&nbsp;[Watt]</div>
+      <div class="formula mint en">Q = √3 × V_L × I_L × sin θ &nbsp;=&nbsp; 3 × V_ph × I_ph × sin θ &nbsp;&nbsp;[VAR]</div>
+      <div class="formula en">S = √3 × V_L × I_L &nbsp;=&nbsp; 3 × V_ph × I_ph &nbsp;&nbsp;[VA]</div>
+      <div class="note">💛 القوانين دي شغالة في النجمة <b>و</b> المثلث — بس اختار مجموعة واحدة (Line أو Phase) ومتخلطش.</div>
+    </div>
+
+    <!-- 5. Transformer theory -->
+    <div class="rev-card">
+      <h3><span class="ic">🔄</span> AC Transformer — نظرية التشغيل</h3>
+      <ul>
+        <li>المحول شغال على <span class="hl">الحث الكهرومغناطيسي</span> — <span class="en">electro-magnetic field → induced voltage</span></li>
+      </ul>
+      <div class="rev-art">
+        <svg width="420" height="180" viewBox="0 0 420 180">
+          <rect x="170" y="30" width="12" height="120" rx="6" fill="#DFB6B2"/>
+          <rect x="196" y="30" width="12" height="120" rx="6" fill="#DFB6B2"/>
+          <path d="M165 40 h-50 M165 60 h-50 M165 80 h-50 M165 100 h-50 M165 120 h-50" stroke="#522B5B" stroke-width="3" stroke-linecap="round"/>
+          <path d="M213 40 h50 M213 60 h50 M213 80 h50 M213 100 h50 M213 120 h50" stroke="#854F6C" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="70" cy="125" r="18" fill="none" stroke="#DFB6B2" stroke-width="3"/>
+          <path d="M79 117 l-10 10 h8 l-6 10" stroke="#DFB6B2" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <text x="70" y="160" text-anchor="middle" font-size="13" font-family="Outfit" fill="#854F6C">AC Supply</text>
+          <text x="120" y="20" text-anchor="middle" font-size="13" font-family="Outfit" fill="#522B5B">Primary</text>
+          <text x="280" y="20" text-anchor="middle" font-size="13" font-family="Outfit" fill="#854F6C">Secondary</text>
+          <text x="260" y="160" text-anchor="middle" font-size="13" font-family="Outfit" fill="#854F6C">Load</text>
+        </svg>
+      </div>
+      <div class="law">⭐ <span class="en">e.m.f = −N × (dφ/dt)</span></div>
+      <div class="formula en">E_p = 4.44 × f × φ_m × N_p &nbsp;&nbsp;|&nbsp;&nbsp; E_s = 4.44 × f × φ_m × N_s</div>
+      <div class="formula mint en">E_p / E_s = N_p / N_s</div>
+      <ul>
+        <li><span class="en">E_p</span>: Primary induced voltage — <span class="en">E_s</span>: Secondary induced voltage</li>
+        <li><span class="en">φ</span>: magnetic flux — <span class="en">f</span>: form factor — <span class="en">N_p, N_s</span>: عدد اللفات</li>
+      </ul>
+      <div class="law">⭐ نسبة التحويل: <span class="en">V_p/V_s = I_s/I_p = N_p/N_s</span></div>
+      <div class="note">💛 Step-down transformer <span class="en">(V_p &gt; V_s)</span>: يبقى <span class="en">I_p &lt; I_s</span> و <span class="en">N_p &gt; N_s</span> — الفولت عالي يعني التيار واطي.</div>
+      <div class="note">💛 <span class="en">S_p = S_s</span> — القدرة الظاهرية (Apparent power) للأبتدائي = الثانوي: <span class="en">I_s×V_s = I_p×V_p</span></div>
+      <div class="note">💛 القدرة النشطة: <span class="en">P = I × V × cos θ</span> — معامل القدرة <span class="en">cos θ</span> بيظهر مع الأحمال.</div>
+    </div>
+
+    <!-- 6. Equivalent circuit -->
+    <div class="rev-card">
+      <h3><span class="ic">🧲</span> Equivalent Circuit — الدائرة المكافئة</h3>
+      <div class="rev-art">
+        <svg width="440" height="150" viewBox="0 0 440 150">
+          <rect x="30" y="55" width="90" height="40" rx="8" fill="#F3DCDC" stroke="#522B5B" stroke-width="2"/>
+          <text x="75" y="80" text-anchor="middle" font-size="13" font-family="Outfit" fill="#522B5B">R₁ , X₁</text>
+          <rect x="160" y="55" width="90" height="40" rx="8" fill="#FBE4D8" stroke="#854F6C" stroke-width="2"/>
+          <text x="205" y="80" text-anchor="middle" font-size="13" font-family="Outfit" fill="#854F6C">R₂′ , X₂′</text>
+          <rect x="290" y="55" width="70" height="40" rx="8" fill="#FBE4D8" stroke="#DFB6B2" stroke-width="2"/>
+          <text x="325" y="80" text-anchor="middle" font-size="13" font-family="Outfit" fill="#854F6C">Rc , Xm</text>
+          <line x1="120" y1="75" x2="160" y2="75" stroke="#190019" stroke-width="3"/>
+          <line x1="250" y1="75" x2="290" y2="75" stroke="#190019" stroke-width="3"/>
+          <line x1="360" y1="75" x2="400" y2="75" stroke="#190019" stroke-width="3"/>
+          <text x="220" y="130" text-anchor="middle" font-size="13" font-family="Outfit" fill="#854F6C">Approximate equivalent circuit referred to Primary</text>
+        </svg>
+      </div>
+      <div class="law">⭐ تحويل الثانوي للأبتدائي: <span class="en">R₂′ = R₂×(N₁/N₂)² ,&nbsp; X₂′ = X₂×(N₁/N₂)²</span></div>
+      <div class="law">⭐ تحويل الأبتدائي للثانوي: <span class="en">R₁′ = R₁×(N₂/N₁)² ,&nbsp; X₁′ = X₁×(N₂/N₁)²</span></div>
+      <div class="note">💛 <span class="en">Rc</span> = مقاومة فقد الحديد (Core loss) و <span class="en">Xm</span> = مفاعلة المجال المغناطيسي (Magnetizing) — ثابتين ومابيتغيروش مع الحمل.</div>
+    </div>
+
+    <!-- 7. Losses & efficiency -->
+    <div class="rev-card">
+      <h3><span class="ic">📉</span> Losses &amp; Efficiency — الفقد والكفاءة</h3>
+      <div class="formula en">Copper losses = I₁²×R₁ + I₂²×R₂</div>
+      <div class="formula mint en">Total transformer losses = Copper losses + Iron losses</div>
+      <div class="formula en">P_in = P_out + Losses</div>
+      <div class="law">⭐ <span class="en">η% = (P_out / P_in) × 100</span></div>
+      <div class="note">💛 مسارات المحلولة تحت مهمة جدًا — امتحن نفسك فيها قبل ما تدخل.</div>
+    </div>
+  </div>
+
+  <div class="fixed-cta">
+    <button class="btn btn-primary" onclick="startProblems()">🧮 المسائل المحلولة</button>
+    <button class="btn btn-mint" onclick="startExam()">جاهز؟ يلا نختبر نفسنا ونشوف مستواك 🚀</button>
+  </div>
+</section>
+
+<!-- ============ PROBLEMS SCREEN ============ -->
+<section id="screen-problems" class="screen">
+  <div class="wrap">
+    <div class="rev-head">
+      <button class="btn btn-back" onclick="showScreen('screen-start')">→ رجوع</button>
+      <h2>🧮 المسائل</h2>
+    </div>
+
+    <!-- Solved problems -->
+    <div class="rev-card">
+      <h3><span class="ic">📝</span> مسائل محلولة (من اللوح) — دي اللي هتيجي</h3>
+
+      <div class="problem">
+        <div class="ptitle">مسألة 1: كفاءة محول 400 kVA</div>
+        <div style="font-size:14.5px;line-height:1.9">محول أحادي الطور <span class="en">400 kVA</span>، <span class="en">V₁=5 kV, V₂=320 V, R₁=0.5 Ω, R₂=0.001 Ω, P.F=0.85, Iron losses=2.5 kW</span>. احسب الكفاءة.</div>
+        <div class="step">S₁ = S₂ = 400 kVA</div>
+        <div class="step">I₁ = S₁/V₁ = 400×10³ / 5×10³ = <span class="res">80 A</span></div>
+        <div class="step">I₂ = S₂/V₂ = 400×10³ / 320 = <span class="res">1250 A</span></div>
+        <div class="step">Copper = I₁²R₁ + I₂²R₂ = (80²×0.5)+(1250²×0.001) = <span class="res">≈ 4.76 kW</span></div>
+        <div class="step">Total losses = 4.76 + 2.5 = <span class="res">≈ 7.26 kW</span></div>
+        <div class="step">P_out = I₂×V₂×cosθ = 1250×320×0.85 = <span class="res">340 kW</span></div>
+        <div class="step">P_in = 340 + 7.26 = <span class="res">347.26 kW</span></div>
+        <div class="step">η% = (340 / 347.26) × 100 = <span class="res">97.9%</span></div>
+        <button class="btn-explain" onclick="toggleExplain(this)" aria-expanded="false">💡 اشرحلي المسألة بالتفصيل</button>
+        <div class="explain">
+          <h4>🧠 الفكرة بتاعت المسألة</h4>
+          <p>الكفاءة معناها: من الشغل اللي دخل المحول، كام اللي طلع فعلاً؟ يعني <span class="en">η = P_out / P_in</span>. والقدرة الداخلة = الخارجة + الفقد. والفقد نوعين: <b>فقد نحاس</b> (بسبب مقاومة اللفات، بيتغير مع الحمل) و<b>فقد حديد</b> (ثابت، وهو معطيهولك 2.5 kW).</p>
+          <h4>🪜 الحل خطوة بخطوة</h4>
+          <ol class="ex-steps">
+            <li><b>نجيب التيارين:</b> التيار = القدرة الظاهرية ÷ الجهد. الابتدائي <span class="en">400000 / 5000 = 80 A</span> والثانوي <span class="en">400000 / 320 = 1250 A</span>. التيار في الثانوي أكبر بكتير لأن جهده أقل والقدرة واحدة تقريباً.</li>
+            <li><b>فقد النحاس:</b> كل ملف فقده <span class="en">I²R</span>. الابتدائي: <span class="en">80² × 0.5 = 3200 W</span>. الثانوي: <span class="en">1250² × 0.001 = 1562.5 W</span>. المجموع <span class="en">4762.5 W ≈ 4.76 kW</span>.</li>
+            <li><b>الفقد الكلي:</b> نجمع النحاس مع الحديد: <span class="en">4.76 + 2.5 = 7.26 kW</span>.</li>
+            <li><b>القدرة الخارجة الفعلية:</b> الـ <span class="en">400 kVA</span> دي قدرة ظاهرية، فنضربها في معامل القدرة: <span class="en">1250 × 320 × 0.85 = 340000 W = 340 kW</span>.</li>
+            <li><b>القدرة الداخلة:</b> <span class="en">340 + 7.26 = 347.26 kW</span>.</li>
+            <li><b>الكفاءة:</b> <span class="en">340 / 347.26 = 0.979</span> يعني <b>97.9%</b>.</li>
+          </ol>
+          <div class="ex-tip">⚠️ <b>غلطة شائعة:</b> تحسب الخارجة 400 kW على إنها قدرة فعلية. لازم تضرب في <span class="en">cosθ</span> الأول. وافتكر إن فقد الحديد ثابت، لكن فقد النحاس بيزيد مع مربع التيار.</div>
+        </div>
+      </div>
+
+      <div class="problem">
+        <div class="ptitle">مسألة 2: محول 5 kVA بنسبة لفات 10:1</div>
+        <div style="font-size:14.5px;line-height:1.9"><span class="en">Single phase transformer of 5 kVA</span> بنسبة لفات <span class="en">10:1 (N₁=10, N₂=1)</span> متغذي من <span class="en">2.5 kV</span>.</div>
+        <div class="step">V₂ = (N₂/N₁)×V₁ = (1/10)×2500 = <span class="res">250 V</span></div>
+        <div class="step">S₁ = S₂ = 5000 VA &nbsp;→&nbsp; I₂ = 5000/250 = <span class="res">20 A</span></div>
+        <div class="step">I_p = (V_s×I_s)/V_p = 5000/2500 = <span class="res">2 A</span></div>
+        <div class="step">Minimum load resistance = V₂/I₂ = 250/20 = <span class="res">12.5 Ω</span></div>
+        <button class="btn-explain" onclick="toggleExplain(this)" aria-expanded="false">💡 اشرحلي المسألة بالتفصيل</button>
+        <div class="explain">
+          <h4>🧠 الفكرة بتاعت المسألة</h4>
+          <p>المحول المثالي مفيش فيه فقد، يعني <b>القدرة الداخلة = القدرة الخارجة</b>. والجهد بيتناسب مع عدد اللفات، أما التيار فبيتناسب عكسياً (لو الجهد قل التيار يزيد).</p>
+          <h4>🪜 الحل خطوة بخطوة</h4>
+          <ol class="ex-steps">
+            <li><b>الجهد الثانوي:</b> النسبة <span class="en">10:1</span> يعني الثانوي لفاته أقل بـ 10 مرات، فالجهد كمان أقل: <span class="en">V₂ = 2500 × (1/10) = 250 V</span>. ده محول خافض.</li>
+            <li><b>التيار الثانوي:</b> الـ <span class="en">5 kVA = 5000 VA</span> وكلها بتطلع من الثانوي: <span class="en">I₂ = 5000 / 250 = 20 A</span>.</li>
+            <li><b>التيار الابتدائي:</b> نفس القدرة بس على الجهد العالي: <span class="en">I₁ = 5000 / 2500 = 2 A</span>. وتقدر تتأكد: التيار الثانوي مقسوم على 10 = 2 A ✔.</li>
+            <li><b>أقل مقاومة حمل:</b> بقانون أوم <span class="en">R = V₂ / I₂ = 250 / 20 = 12.5 Ω</span>. وسميناها "أقل" لأن لو حطينا مقاومة أصغر منها التيار هيعدي الـ 20 A المقنن والمحول هيتحمل فوق طاقته ويسخن.</li>
+          </ol>
+          <div class="ex-tip">⚠️ <b>خد بالك:</b> ما تجمعش جهد مع تيار بالغلط. الجهد بينزل بنسبة اللفات والتيار بيطلع بنفس النسبة (عكسي).</div>
+        </div>
+      </div>
+
+      <div class="problem">
+        <div class="ptitle">مسألة 3: محول مثالي مع مقاومة 12 Ω</div>
+        <div style="font-size:14.5px;line-height:1.9">مقاومة <span class="en">12 Ω</span> على ملف الثانوي لمحول مثالي، <span class="en">V_s = 120 V</span> و<span class="en">I_p = 4 A</span>. احسب <span class="en">V_p</span>.</div>
+        <div class="step">I_s = V_s / R = 120 / 12 = <span class="res">10 A</span></div>
+        <div class="step">V_p = (V_s × I_s) / I_p = (120×10)/4 = <span class="res">300 V</span></div>
+        <button class="btn-explain" onclick="toggleExplain(this)" aria-expanded="false">💡 اشرحلي المسألة بالتفصيل</button>
+        <div class="explain">
+          <h4>🧠 الفكرة بتاعت المسألة</h4>
+          <p>محول مثالي برضه، فالقاعدة هي هي: <span class="en">V_p × I_p = V_s × I_s</span>. هنجيب تيار الثانوي من المقاومة الأول، وبعدين نطلع جهد الابتدائي.</p>
+          <h4>🪜 الحل خطوة بخطوة</h4>
+          <ol class="ex-steps">
+            <li><b>تيار الثانوي:</b> المقاومة <span class="en">12 Ω</span> متوصلة على <span class="en">120 V</span>، يبقى بقانون أوم <span class="en">I_s = 120 / 12 = 10 A</span>.</li>
+            <li><b>القدرة الخارجة:</b> <span class="en">V_s × I_s = 120 × 10 = 1200 VA</span>.</li>
+            <li><b>القدرة الداخلة هي نفسها</b> لأن المحول مثالي: <span class="en">V_p × 4 = 1200</span> فـ <span class="en">V_p = 1200 / 4 = 300 V</span>.</li>
+            <li><b>تأكد من الحل:</b> نسبة الجهد <span class="en">300 / 120 = 2.5</span> ونسبة التيار <span class="en">10 / 4 = 2.5</span>، يعني نسبة اللفات 2.5 : 1 ✔ ومتطابقين.</li>
+          </ol>
+          <div class="ex-tip">⚠️ <b>تلميحة:</b> أي مسألة محول مثالي تعدي على القدرة: الداخلة = الخارجة، ومنها تطلع المجهول بسرعة.</div>
+        </div>
+      </div>
+
+      <div class="problem">
+        <div class="ptitle">مسألة 4: حمل نجمة (Example 2.2)</div>
+        <div style="font-size:14.5px;line-height:1.9">حمل نجمة متوازن <span class="en">Z = 10∠30° Ω</span> لكل طور، والجهد <span class="en">V_an = 220∠0° V, V_bn = 220∠240° V, V_cn = 220∠120° V</span>.</div>
+        <div class="step">I_a = V_an/Z = 220∠0° / 10∠30° = <span class="res">22∠−30° A</span></div>
+        <div class="step">I_b = 220∠240° / 10∠30° = <span class="res">22∠210° A</span></div>
+        <div class="step">I_c = 220∠120° / 10∠30° = <span class="res">22∠90° A</span></div>
+        <div class="step">V_ab = V_an − V_bn = <span class="res">220√3 ∠30° V</span></div>
+        <div class="step">V_bc = <span class="res">220√3 ∠−90° V</span> ,&nbsp; V_ca = <span class="res">220√3 ∠150° V</span></div>
+        <div class="step">S = 3×V_ph×I_ph = 4840×3 = <span class="res">14520 ∠30° VA</span></div>
+        <div class="step">P_t = <span class="res">12574 W</span> ,&nbsp; Q_t = <span class="res">7260 VAR</span></div>
+        <button class="btn-explain" onclick="toggleExplain(this)" aria-expanded="false">💡 اشرحلي المسألة بالتفصيل</button>
+        <div class="explain">
+          <h4>🧠 الفكرة بتاعت المسألة</h4>
+          <p>حمل نجمة متوازن يعني التلات فازات ليهم نفس المعاوقة <span class="en">Z = 10∠30° Ω</span>، وكل فاز متوصل على جهد الفاز بتاعه. في النجمة <b>تيار الخط = تيار الفاز</b>، وجهد الخط = <span class="en">√3 × جهد الفاز</span> وبيسبقه بـ 30°. ولو عندك أعداد فازية: القسمة معناها <b>نقسم المقدار ونطرح الزاوية</b>.</p>
+          <h4>🪜 الحل خطوة بخطوة</h4>
+          <ol class="ex-steps">
+            <li><b>تيارات الخط (الجزء A):</b> <span class="en">I_a = V_an / Z = 220∠0° / 10∠30°</span>. المقدار <span class="en">220/10 = 22</span> والزاوية <span class="en">0 − 30 = −30°</span>. يبقى <b><span class="en">22∠−30° A</span></b>. بنفس الطريقة <span class="en">I_b</span>: <span class="en">240 − 30 = 210°</span> و<span class="en">I_c</span>: <span class="en">120 − 30 = 90°</span>. التيارات متأخرة 30° عن الجهد لأن الحمل حثي.</li>
+            <li><b>جهد الخط <span class="en">V_ab</span> (الجزء B):</b> <span class="en">V_an − V_bn = 220∠0° − 220∠240°</span>. بعد التحويل لـ <span class="en">a + jb</span> بتطلع <span class="en">220(1.5 + j0.866)</span> وده بالظبط <b><span class="en">220√3 ∠30° V</span></b> (حوالي 381 V).</li>
+            <li><b><span class="en">V_bc</span> و<span class="en">V_ca</span>:</b> كل جهد خط بيتأخر 120° عن اللي قبله. <span class="en">V_bc = 30 − 120 = −90°</span> و<span class="en">V_ca = −90 − 120 = −210°</span> وهي نفسها <span class="en">+150°</span>. والمقدار واحد <span class="en">220√3</span>.</li>
+            <li><b>القدرة الظاهرية (الجزء C):</b> للفاز a: <span class="en">S = V_an × I_a*</span>. العلامة <span class="en">*</span> معناها conjugate يعني نعكس إشارة زاوية التيار: <span class="en">220∠0° × 22∠+30° = 4840∠30° VA</span>. والتلات فازات متساويين فنضرب في 3: <span class="en">14520∠30° VA</span>.</li>
+            <li><b>نطلع P و Q:</b> <span class="en">P = 14520 × cos30° = 12574.7 W</span> و<span class="en">Q = 14520 × sin30° = 7260 VAR</span>.</li>
+          </ol>
+          <div class="ex-tip">⚠️ <b>أكتر غلطتين:</b> (1) تنسى الـ conjugate وتاخد زاوية التيار زي ما هي. (2) تحسب القدرة الكلية من فاز واحد وتنسى تضرب في 3. وللتأكيد: <span class="en">P = √3 V_L I_L cosθ</span> هتدي نفس الرقم.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fixed-cta">
+    <button class="btn btn-primary" onclick="startReview()">📚 الشرح النظري</button>
+    <button class="btn btn-mint" onclick="startExam()">جاهز؟ يلا نختبر نفسنا ونشوف مستواك 🚀</button>
+  </div>
+</section>
+
+<!-- ============ EXAM SCREEN ============ -->
+<section id="screen-exam" class="screen">
+  <div class="exam-top">
+    <div class="exam-meta">
+      <span class="pill" id="answeredPill">أجبت على 0 / 18</span>
+      <span class="timer">⏱️ <span id="timer">00:00</span></span>
+    </div>
+    <div class="progress"><div id="progressBar"></div></div>
+  </div>
+
+  <div class="q-card">
+    <span class="q-tag theo" id="qTag">📖 نظري</span>
+    <div class="q-text" id="qText"></div>
+    <div class="hint-row">
+      <button class="btn-hint" id="hintBtn" onclick="toggleHint()">💡 تلميح</button>
+      <div class="hint-box" id="hintBox"></div>
+    </div>
+    <div class="choices" id="choices"></div>
+  </div>
+
+  <div class="exam-nav">
+    <button class="btn btn-back" id="prevBtn" onclick="goQuestion(-1)">→ السابق</button>
+    <div class="dots" id="dots"></div>
+    <button class="btn btn-back" id="nextBtn" onclick="goQuestion(1)">التالي ←</button>
+  </div>
+
+  <div class="submit-bar">
+    <button class="btn btn-primary" onclick="submitExam()">Submit &amp; See My Score 🏁</button>
+  </div>
+</section>
+
+<!-- ============ RESULT SCREEN ============ -->
+<section id="screen-result" class="screen">
+  <div class="wrap" style="display:flex;flex-direction:column;align-items:center;gap:20px">
+
+    <div class="res-card">
+      <div class="score-ring">
+        <svg viewBox="0 0 120 120">
+          <defs><linearGradient id="gradRing" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#522B5B"/><stop offset="100%" stop-color="#854F6C"/>
+          </linearGradient></defs>
+          <circle class="ring-bg" cx="60" cy="60" r="52"/>
+          <circle class="ring-fg" id="ringFg" cx="60" cy="60" r="52"/>
+        </svg>
+        <div class="score-num"><span id="scorePct">0</span>%</div>
+      </div>
+      <div class="stats">
+        <div class="stat ok">✅ صح: <span id="statOk">0</span></div>
+        <div class="stat bad">❌ غلط: <span id="statBad">0</span></div>
+        <div class="stat">📋 الإجمالي: <span id="statTotal">0</span></div>
+      </div>
+      <div class="grade-msg" id="gradeMsg"></div>
+
+      <div class="cert-box">
+        <canvas id="certCanvas" width="1000" height="700"></canvas>
+        <div style="margin-top:14px">
+          <a class="btn btn-mint" id="downloadCert" download="certificate.png">⬇️ حمّل الشهادة PNG</a>
+        </div>
+      </div>
+
+      <div class="ask-box">
+        💬 لو محتاج تسأل أو تستفسر عن أي حاجة ابعتلي
+        <div class="dev-contact" style="margin-top:14px"><a class="social wa" href="https://wa.me/201091139568" target="_blank" rel="noopener" aria-label="واتساب" title="واتساب"><svg viewBox="0 0 24 24" fill="#fff"><path d="M17.5 14.4c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.14-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.5 0 1.47 1.07 2.9 1.22 3.1.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.7.62.71.23 1.36.2 1.87.12.57-.08 1.76-.72 2-1.41.25-.7.25-1.29.18-1.41-.07-.13-.27-.2-.57-.35M12.04 21.79h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.88 9.9-9.88a9.83 9.83 0 0 1 6.99 2.9 9.83 9.83 0 0 1 2.89 7c0 5.45-4.44 9.87-9.89 9.87M20.5 3.49A11.8 11.8 0 0 0 12.04 0C5.5 0 .16 5.33.16 11.89c0 2.1.55 4.14 1.59 5.95L.07 24l6.3-1.65a11.9 11.9 0 0 0 5.68 1.45h.01c6.55 0 11.89-5.33 11.89-11.89 0-3.18-1.24-6.16-3.45-8.42"/></svg></a><a class="social tg" href="https://t.me/HRBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" target="_blank" rel="noopener" aria-label="تيليجرام" title="تيليجرام"><svg viewBox="0 0 24 24" fill="#fff"><path d="M9.04 15.94l-.38 5.35c.54 0 .78-.23 1.06-.5l2.55-2.44 5.28 3.87c.97.53 1.66.25 1.92-.9L22.9 4.62c.31-1.43-.52-1.99-1.46-1.64L1.7 10.6c-1.4.54-1.38 1.32-.24 1.67l4.93 1.54L18.1 6.6c.56-.37 1.07-.17.65.2"/></svg></a></div>
+      </div>
+    </div>
+
+    <div class="res-card" style="text-align:right">
+      <h3 style="font-weight:900;color:var(--primary);margin-bottom:16px">🔍 مراجعة كاملة لإجاباتك</h3>
+      <div class="review-list" id="reviewList"></div>
+    </div>
+
+    <button class="btn btn-ghost" onclick="retakeExam()">🔄 اعمل الامتحان تاني</button>
+  </div>
+</section>
+
+<script>
+/* ================= DATA (من اللوح بس) ================= */
+const QUESTIONS = [
+ {type:'theo', q:'What is the phase shift between each voltage in a three-phase system?',
+  choices:['60°','90°','120°','180°'], correct:2,
+  hint:'الدايرة الكاملة 360° وبتتقسم على 3 فازات متساوية.',
+  expAr:'دي من أهم خصائص النظام: نفس القيمة العظمى، نفس التردد، والإزاحة بين كل فولت والتاني 120°.',
+  expEn:'Phase shift between each voltage = 120°'},
+ {type:'theo', q:'In a star (Y) system, the relation between line voltage and phase voltage is:',
+  choices:['V_L = V_ph','V_L = √3 × V_ph','V_L = 3 × V_ph','V_L = V_ph / √3'], correct:1,
+  hint:'جهد الخط بيتقاس بين فازين مش فاز واحد، فهو أكبر من جهد الفاز، بس مش 3 أضعافه.',
+  expAr:'في التوصيلة نجمة الفولت الخط بيتضرب في جذر 3: V_L = √3 × V_ph.',
+  expEn:'Star: V_L = √3 V_ph , I_L = I_ph'},
+ {type:'theo', q:'In a delta (Δ) system, the relation between line current and phase current is:',
+  choices:['I_L = I_ph','I_L = 3 × I_ph','I_L = √3 × I_ph','I_L = I_ph / √3'], correct:2,
+  hint:'في المثلث كل ملف متوصل بين خطين، فالجهد واحد. لكن التيار الداخل على كل ركن بيتوزع على ملفين، فتيار الخط هو الأكبر.',
+  expAr:'في التوصيلة مثلث التيار الخط = جذر 3 × تيار الطور، والفولت الخط = فولت الطور.',
+  expEn:'Delta: I_L = √3 I_ph , V_L = V_ph'},
+ {type:'theo', q:'In a star system, the relation between line current and phase current is:',
+  choices:['I_L = I_ph','I_L = √3 × I_ph','I_L = 2 × I_ph','I_L = 3 × I_ph'], correct:0,
+  hint:'في النجمة تيار الخط بيعدي في الملف نفسه (نفس السلك على التوالي)، يعني مفيش حاجة تجمعه أو تقسمه.',
+  expAr:'في النجمة التيار الخط بيساوي تيار الطور زي ما هو — اللي بيتغير هو الفولت بس.',
+  expEn:'Star: I_L = I_ph'},
+ {type:'theo', q:'A transformer works on the principle of:',
+  choices:['Ohm\'s law','Electromagnetic induction','Kirchhoff\'s law','Thermal heating effect'], correct:1,
+  hint:'المحول مفيش فيه حاجة بتتحرك. اللي بيولّد الجهد في الملف التاني هو مجال مغناطيسي متغير، مش حرارة ولا مقاومة.',
+  expAr:'المحول شغال على الحث الكهرومغناطيسي: مجال مغناطيسي متغير يولّد جهد مستحث.',
+  expEn:'e.m.f = −N × dφ/dt (electromagnetic induction)'},
+ {type:'theo', q:'The e.m.f equation of a transformer (primary side) is:',
+  choices:['E_p = 4.44 × f × φ_m × N_p','E_p = 4.44 × f / (φ_m × N_p)','E_p = f × φ_m × N_p','E_p = 4.44 × φ_m × N_p / f'], correct:0,
+  hint:'القانون فيه الرقم 4.44، والتردد والفيض واللفات كلهم لما يزيدوا الجهد يزيد، يعني كلهم بيتضربوا مع بعض ومفيش قسمة.',
+  expAr:'قانون الجهد المستحث: E_p = 4.44 f φ_m N_p — ونفس القانون للثانوي بس بـ N_s.',
+  expEn:'E_p = 4.44 f φ_m N_p , E_s = 4.44 f φ_m N_s'},
+ {type:'theo', q:'For a step-down transformer (V_p > V_s):',
+  choices:['N_p < N_s and I_p > I_s','N_p > N_s and I_p < I_s','N_p = N_s and I_p = I_s','N_p > N_s and I_p > I_s'], correct:1,
+  hint:'خافض يعني الجهد الابتدائي أعلى. والقدرة ثابتة، فلو الجهد زاد التيار بيقل. وعدد اللفات بيمشي مع الجهد.',
+  expAr:'المحول الخافض: لفات أبتدائي أكتر وتيار أبتدائي أقل، لأن القدرة الظاهرية متساوية S_p = S_s.',
+  expEn:'V_p/V_s = N_p/N_s = I_s/I_p , S_p = S_s'},
+ {type:'theo', q:'The total transformer losses equal:',
+  choices:['Copper losses × Iron losses','Copper losses + Iron losses','Copper losses − Iron losses','Iron losses only'], correct:1,
+  hint:'فيه نوعين من الفقد: واحد بيتغير مع الحمل وواحد ثابت. والفقد الكلي هو الاتنين مع بعض.',
+  expAr:'فقد المحول الكلي = فقد النحاس (بيتغير مع الحمل) + فقد الحديد (ثابت).',
+  expEn:'Total losses = Copper losses + Iron losses'},
+ {type:'theo', q:'The apparent power (S) in a three-phase system is:',
+  choices:['S = √3 × V_L × I_L  (VA)','S = 3 × V_L × I_L × cos θ','S = V_L × I_L × sin θ','S = V_ph × I_ph / 3'], correct:0,
+  hint:'القدرة الظاهرية وحدتها VA ومفيهاش كوساين ولا ساين. الكوساين بيظهر في القدرة الفعلية بس.',
+  expAr:'القدرة الظاهرية ثلاثية الأطوار S = √3 V_L I_L ووحدتها VA — من غير كويس ولا ساين.',
+  expEn:'S = √3 V_L I_L (VA)'},
+ {type:'calc', q:'A 400 kVA single-phase transformer has primary voltage V₁ = 5 kV. The primary current I₁ is:',
+  choices:['8 A','80 A','800 A','1250 A'], correct:1,
+  hint:'التيار = القدرة ÷ الجهد. حوّل kVA لـ VA (× 1000) وحوّل kV لـ V الأول.',
+  expAr:'I₁ = S/V₁ = 400×10³ / 5×10³ = 80 A — قدرة أبتدائي = قدرة ثانوي.',
+  expEn:'I₁ = S₁/V₁ = 400×10³/5×10³ = 80 A'},
+ {type:'calc', q:'The same transformer (400 kVA, V₂ = 320 V). The full-load secondary current I₂ is:',
+  choices:['125 A','1250 A','250 A','80 A'], correct:1,
+  hint:'نفس الفكرة بس على جهد الثانوي (320 V). الجهد أقل من الابتدائي بكتير، فالتيار هيبقى أكبر منه بكتير.',
+  expAr:'I₂ = S₂/V₂ = 400×10³ / 320 = 1250 A — لاحظ الثانوي فولته واطي فتياره عالي.',
+  expEn:'I₂ = S₂/V₂ = 400×10³/320 = 1250 A'},
+ {type:'calc', q:'For the 400 kVA transformer (I₁=80A, R₁=0.5Ω, I₂=1250A, R₂=0.001Ω), the copper losses are approximately:',
+  choices:['3.2 kW','4.76 kW','7.26 kW','2.5 kW'], correct:1,
+  hint:'فقد النحاس = I²R لكل ملف وبنجمعهم. احسب كل ملف لوحده. وخد بالك إن 7.26 فيها فقد الحديد كمان.',
+  expAr:'Copper = I₁²R₁ + I₂²R₂ = (80²×0.5)+(1250²×0.001) = 3200+1562.5 ≈ 4.76 kW. الـ 7.26 كيلو دي مع فقد الحديد.',
+  expEn:'Cu = I₁²R₁ + I₂²R₂ ≈ 4.76 kW'},
+ {type:'calc', q:'A 12 Ω resistor is connected across the secondary of an IDEAL transformer. If V_s = 120 V, the secondary current I_s is:',
+  choices:['1 A','10 A','12 A','4 A'], correct:1,
+  hint:'قانون أوم على الثانوي: التيار = الجهد ÷ المقاومة.',
+  expAr:'تيار الثانوي = الجهد على المقاومة: I_s = V_s/R = 120/12 = 10 A.',
+  expEn:'I_s = V_s/R = 120/12 = 10 A'},
+ {type:'calc', q:'For the same ideal transformer (V_s = 120 V, I_s = 10 A, I_p = 4 A), the primary voltage V_p is:',
+  choices:['120 V','240 V','300 V','480 V'], correct:2,
+  hint:'المحول مثالي يعني القدرة الداخلة = الخارجة: V_p × I_p = V_s × I_s. عندك التلاتة التانيين، اطلع الناقص.',
+  expAr:'من تساوي القدرة: V_p = (V_s × I_s)/I_p = (120×10)/4 = 300 V.',
+  expEn:'V_p = V_s I_s / I_p = 300 V'},
+ {type:'calc', q:'A 5 kVA single-phase transformer has turns ratio 10:1 (N₁=10, N₂=1) and is fed from a 2.5 kV supply. The secondary voltage V₂ is:',
+  choices:['25 V','250 V','2500 V','125 V'], correct:1,
+  hint:'النسبة 10:1 يعني الابتدائي لفاته أكتر 10 مرات. فالجهد في الثانوي بيبقى أقل بنفس النسبة.',
+  expAr:'V₂ = (N₂/N₁)×V₁ = (1/10)×2500 = 250 V — ده محول خافض زي ما اتفقنا.',
+  expEn:'V₂ = (N₂/N₁) × V₁ = 250 V'},
+ {type:'calc', q:'For the same 5 kVA transformer (V₂ = 250 V), the full-load secondary current I₂ is:',
+  choices:['2 A','20 A','200 A','10 A'], correct:1,
+  hint:'التيار = القدرة بالـ VA ÷ الجهد. الـ 5 kVA يعني 5000 VA، والجهد اللي هتقسم عليه هو جهد الثانوي.',
+  expAr:'I₂ = S/V₂ = 5000/250 = 20 A.',
+  expEn:'I₂ = 5000/250 = 20 A'},
+ {type:'calc', q:'A Y-connected balanced load has Z = 10∠30° Ω per phase and V_an = 220∠0° V. The phase current I_a is:',
+  choices:['22∠30° A','22∠−30° A','220∠30° A','22∠0° A'], correct:1,
+  hint:'في الأعداد الفازية القسمة معناها: نقسم المقدارين ونطرح الزاويتين (زاوية الجهد − زاوية Z).',
+  expAr:'في النجمة التيار = فولت الطور على المعاوقة: I_a = V_an/Z = 220∠0° / 10∠30° = 22∠−30° A. الزوايا بتتطرح.',
+  expEn:'I_an = V_an/Z = 22∠−30° A'},
+ {type:'calc', q:'Using the same load (V_ph = 220 V, I_ph = 22 A, θ = 30°), the total active power P is:',
+  choices:['7260 W','12574 W','14520 W','4840 W'], correct:1,
+  hint:'P = 3 × V × I × cosθ. اضرب 3 × 220 × 22 الأول، وبعدين في cos 30° (حوالي 0.866). والرقم اللي هيطلع في الأول هو القدرة الظاهرية مش الفعلية.',
+  expAr:'P = 3×V_ph×I_ph×cosθ = 3×220×22×cos30° = 14520×0.866 ≈ 12574 W. أما الـ 14520 دي القدرة الظاهرية S.',
+  expEn:'P = 3 V_ph I_ph cosθ ≈ 12574 W'}
+];
+
+/* ================= STATE ================= */
+let answers = new Array(QUESTIONS.length).fill(null);
+let hintsOpen = {};
+let currentQ = 0, timerInt = null, seconds = 0, studentName = '';
+
+/* ================= HELPERS ================= */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0});
+}
+function getName(){ return (document.getElementById('studentName').value || '').trim() || 'يا بطل'; }
+
+/* ================= START ================= */
+function startReview(){ showScreen('screen-review'); }
+function toggleExplain(btn){
+  const box=btn.nextElementSibling;
+  const open=box.classList.toggle('open');
+  btn.setAttribute('aria-expanded',open);
+  btn.textContent=open?'🙈 إخفاء الشرح':'💡 اشرحلي المسألة بالتفصيل';
+}
+function startProblems(){ showScreen('screen-problems'); }
+function startExam(){
+  studentName = getName();
+  answers.fill(null); hintsOpen = {}; currentQ = 0; seconds = 0;
+  startTimer(); renderQuestion(); showScreen('screen-exam');
+}
+
+/* ================= EXAM ================= */
+function startTimer(){
+  clearInterval(timerInt);
+  timerInt = setInterval(()=>{
+    seconds++;
+    const m = String(Math.floor(seconds/60)).padStart(2,'0');
+    const s = String(seconds%60).padStart(2,'0');
+    document.getElementById('timer').textContent = m+':'+s;
+  },1000);
+}
+function renderQuestion(){
+  const q = QUESTIONS[currentQ];
+  const tag = document.getElementById('qTag');
+  if(q.type==='calc'){ tag.textContent='🧮 حسابي'; tag.className='q-tag calc'; }
+  else{ tag.textContent='📖 نظري'; tag.className='q-tag theo'; }
+  document.getElementById('qText').textContent = q.q;
+  const box = document.getElementById('choices'); box.innerHTML='';
+  const letters = ['A','B','C','D'];
+  q.choices.forEach((c,i)=>{
+    const b = document.createElement('button');
+    b.className = 'choice' + (answers[currentQ]===i ? ' sel' : '');
+    b.innerHTML = '<span class="letter">'+letters[i]+'</span><span>'+c+'</span>';
+    b.onclick = ()=>selectChoice(i);
+    box.appendChild(b);
+  });
+  const hb=document.getElementById('hintBox'), hbtn=document.getElementById('hintBtn');
+  hb.textContent=q.hint||''; const ho=!!hintsOpen[currentQ];
+  hb.classList.toggle('open',ho); hbtn.classList.toggle('on',ho); hbtn.textContent=ho?'🙈 إخفاء التلميح':'💡 تلميح';
+  updateNav();
+  if(window.gsap){ gsap.fromTo('.q-card',{opacity:0,y:20},{opacity:1,y:0,duration:.4,ease:'power2.out'}); }
+}
+function toggleHint(){
+  hintsOpen[currentQ]=!hintsOpen[currentQ];
+  const ho=hintsOpen[currentQ];
+  document.getElementById('hintBox').classList.toggle('open',ho);
+  const b=document.getElementById('hintBtn'); b.classList.toggle('on',ho);
+  b.textContent=ho?'🙈 إخفاء التلميح':'💡 تلميح';
+}
+function selectChoice(i){
+  answers[currentQ] = i;
+  renderQuestion();
+  setTimeout(()=>{ if(currentQ < QUESTIONS.length-1){ currentQ++; renderQuestion(); } }, 450);
+}
+function goQuestion(d){
+  const n = currentQ + d;
+  if(n>=0 && n<QUESTIONS.length){ currentQ = n; renderQuestion(); }
+}
+function updateNav(){
+  document.getElementById('prevBtn').disabled = (currentQ===0);
+  document.getElementById('nextBtn').disabled = (currentQ===QUESTIONS.length-1);
+  const answered = answers.filter(a=>a!==null).length;
+  document.getElementById('answeredPill').textContent = 'أجبت على '+answered+' / '+QUESTIONS.length;
+  document.getElementById('progressBar').style.width = (answered/QUESTIONS.length*100)+'%';
+  const dots = document.getElementById('dots'); dots.innerHTML='';
+  QUESTIONS.forEach((_,i)=>{
+    const d = document.createElement('button');
+    d.className = 'dot' + (answers[i]!==null?' done':'') + (i===currentQ?' cur':'');
+    d.textContent = i+1;
+    d.onclick = ()=>{ currentQ = i; renderQuestion(); };
+    dots.appendChild(d);
+  });
+}
+function submitExam(){
+  const un = answers.filter(a=>a===null).length;
+  if(un>0){
+    if(!confirm('لسه في '+un+' سؤال من غير إجابة! متأكد إنك عايز تسلم؟ 😳')) return;
+  }
+  clearInterval(timerInt);
+  showResult();
+}
+
+/* ================= RESULT ================= */
+function showResult(){
+  let ok = 0;
+  QUESTIONS.forEach((q,i)=>{ if(answers[i]===q.correct) ok++; });
+  const total = QUESTIONS.length;
+  const pct = Math.round(ok/total*100);
+  document.getElementById('statOk').textContent = ok;
+  document.getElementById('statBad').textContent = total-ok;
+  document.getElementById('statTotal').textContent = total;
+  const msg = document.getElementById('gradeMsg');
+  let grade;
+  if(pct>=85){ msg.textContent='🌟 ماشاءالله يبني مكانك كلية طب والله 👏'; grade='gold'; launchConfetti(); }
+  else if(pct>=70){ msg.textContent='💪 كويس يبني والله بس في احسن من كدا'; grade='silver'; }
+  else{ msg.textContent='😔 انت مش نافع كدا وهتشيل المادة'; grade='paper'; }
+  showScreen('screen-result');
+  /* ring + counter */
+  setTimeout(()=>{ document.getElementById('ringFg').style.strokeDashoffset = 327 - (327*pct/100); }, 300);
+  const pctEl = document.getElementById('scorePct'); let cur = 0;
+  const step = Math.max(1, Math.round(pct/60));
+  const cnt = setInterval(()=>{ cur+=step; if(cur>=pct){cur=pct;clearInterval(cnt);} pctEl.textContent=cur; }, 25);
+  drawCertificate(grade, pct);
+  renderReviewList();
+}
+function renderReviewList(){
+  const list = document.getElementById('reviewList'); list.innerHTML='';
+  const letters = ['A','B','C','D'];
+  QUESTIONS.forEach((q,i)=>{
+    const user = answers[i];
+    const isOk = user===q.correct;
+    const item = document.createElement('div'); item.className='rv-item';
+    let html = '<div class="verdict" style="color:'+(isOk?'var(--mint-dark)':'var(--danger)')+'">'+
+      (isOk?'✅ إجابة صحيحة':'❌ إجابة غلط')+'</div>';
+    html += '<div class="rv-q">'+(i+1)+'. '+q.q+'</div>';
+    q.choices.forEach((c,j)=>{
+      let cls='';
+      if(j===q.correct) cls='correct';
+      else if(j===user) cls='wrongpick';
+      html += '<div class="rv-ch '+cls+'">'+letters[j]+') '+c+(j===q.correct?' ✅':'')+(j===user&&j!==q.correct?' ❌ اختيارك':'')+'</div>';
+    });
+    html += '<div class="rv-exp">💡 '+q.expAr+'<br><span class="en">'+q.expEn+'</span></div>';
+    item.innerHTML = html;
+    list.appendChild(item);
+  });
+}
+
+/* ================= CERTIFICATE ================= */
+function drawCertificate(grade, pct){
+  const cv = document.getElementById('certCanvas');
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  const name = studentName;
+  const subject = 'ماكينات تيار مباشر ومتردد';
+  const dateStr = new Date().toLocaleDateString('ar-EG');
+  const THEMES = {
+    gold:  {bg1:'#FFF3EC', bg2:'#F6D5CC', b1:'#522B5B', b2:'#854F6C', title:'#2B124C', icon:'👑',
+            head:'شهادة مهندس كهربا جبّار', sub:'بتُمنح للمهندس/ة الجبّار/ة', dashed:false},
+    silver:{bg1:'#FFF9F5', bg2:'#FBE4D8', b1:'#854F6C', b2:'#DFB6B2', title:'#522B5B', icon:'🔌',
+            head:'شهادة مهندس تحت التشغيل', sub:'بتُمنح للمجتهد/ة', dashed:false},
+    paper: {bg1:'#FFF9F5', bg2:'#FFF3EC', b1:'#DFB6B2', b2:'#DFB6B2', title:'#854F6C', icon:'🔥',
+            head:'شهادة فيوز محروق', sub:'بتُمنح (بدون فخر) للبطل/ة', dashed:true}
+  };
+  const LINES = {
+    gold:[
+      'دماغك شغالة بجهد 220 فولت من غير ولا فصلة ⚡',
+      'أنت مش بتذاكر... أنت بتولّد قدرة! 🔋',
+      'مقاومتك للمذاكرة صفر... يعني موصل فائق 😎',
+      'لو الكهربا قطعت أنت اللي هتنوّر الحتة 💡'],
+    silver:[
+      'كويس! بس لسه فيه فقد حديد ونحاس في المذاكرة 😅',
+      'شغال... بس بنص حمل، شد حيلك شوية 🔌',
+      'كفاءتك مش 100% بس أحسن من محول فيه فقد كتير!',
+      'قرّب... كمان شوية وتطلع قدرة فعلية مش ظاهرية 😉'],
+    paper:[
+      'الفيوز اتحرق... بدّله وذاكر تاني 🔥',
+      'الدايرة عندك Open Circuit يا هندسة، قفّلها! 😅',
+      'جهدك واطي ومفيش تيار... فوّق شوية 🪫',
+      'عملت ماس كهربائي في الامتحان 💥 والحمد لله عايش!']
+  };
+  const T = THEMES[grade];
+  const arr = LINES[grade];
+  const line = arr[Math.floor(Math.random()*arr.length)];
+
+  function fit(txt, maxW, weight, family, start, min){
+    let sz = start;
+    while(sz > min){ ctx.font = weight+' '+sz+'px '+family; if(ctx.measureText(txt).width <= maxW) break; sz -= 2; }
+    ctx.font = weight+' '+sz+'px '+family;
+  }
+  function bolt(x, y, sz, color){
+    ctx.save(); ctx.translate(x,y); ctx.scale(sz,sz); ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(.18,-1); ctx.lineTo(-.55,.15); ctx.lineTo(-.06,.15); ctx.lineTo(-.22,1);
+    ctx.lineTo(.55,-.25); ctx.lineTo(.06,-.25); ctx.closePath(); ctx.fill(); ctx.restore();
+  }
+  function trace(pts, color){
+    ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.beginPath();
+    ctx.moveTo(pts[0][0], pts[0][1]); for(let i=1;i<pts.length;i++) ctx.lineTo(pts[i][0], pts[i][1]); ctx.stroke();
+    const l = pts[pts.length-1]; ctx.fillStyle = color; ctx.beginPath(); ctx.arc(l[0], l[1], 6, 0, 7); ctx.fill();
+  }
+
+  ctx.clearRect(0,0,W,H);
+  ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+
+  /* background */
+  const g = ctx.createLinearGradient(0,0,W,H);
+  g.addColorStop(0,T.bg1); g.addColorStop(.5,T.bg2); g.addColorStop(1,T.bg1);
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+
+  /* circuit traces in the four corners */
+  ctx.globalAlpha = .6;
+  const base = [[75,165],[75,100],[150,100],[150,72]];
+  [[1,1],[-1,1],[1,-1],[-1,-1]].forEach(([sx,sy])=>{
+    trace(base.map(([x,y])=>[sx>0?x:W-x, sy>0?y:H-y]), T.b2);
+  });
+  ctx.globalAlpha = 1;
+
+  /* borders */
+  ctx.lineWidth = 18; ctx.strokeStyle = T.b1;
+  if(T.dashed) ctx.setLineDash([22,12]);
+  ctx.strokeRect(20,20,W-40,H-40); ctx.setLineDash([]);
+  ctx.lineWidth = 4; ctx.strokeStyle = T.b2; ctx.strokeRect(42,42,W-84,H-84);
+
+  /* badge */
+  ctx.fillStyle = T.b1; ctx.beginPath(); ctx.arc(W/2,112,54,0,7); ctx.fill();
+  ctx.lineWidth = 5; ctx.strokeStyle = T.b2; ctx.beginPath(); ctx.arc(W/2,112,64,0,7); ctx.stroke();
+  ctx.font = '56px serif'; ctx.fillStyle = '#fff'; ctx.fillText(T.icon, W/2, 132);
+  bolt(W/2-150,112,30,T.b2); bolt(W/2+150,112,30,T.b2);
+
+  /* title + recipient */
+  ctx.fillStyle = T.title; fit(T.head, 780, '900', 'Cairo', 56, 34); ctx.fillText(T.head, W/2, 222);
+  ctx.fillStyle = '#190019'; ctx.font = '700 30px Cairo'; ctx.fillText(T.sub, W/2, 272);
+  ctx.fillStyle = '#522B5B'; fit(name, 760, '900', 'Cairo', 68, 36); ctx.fillText(name, W/2, 348);
+  const nw = Math.min(ctx.measureText(name).width + 60, 800);
+  ctx.strokeStyle = T.b2; ctx.lineWidth = 4; ctx.beginPath();
+  ctx.moveTo(W/2-nw/2,368); ctx.lineTo(W/2+nw/2,368); ctx.stroke();
+  bolt(W/2-nw/2-24,358,16,T.b2); bolt(W/2+nw/2+24,358,16,T.b2);
+  ctx.fillStyle = '#190019'; ctx.font = '700 28px Cairo'; ctx.fillText('في مادة', W/2, 416);
+  ctx.fillStyle = '#6A3A56'; fit(subject, 760, '800', 'Cairo', 42, 28); ctx.fillText(subject, W/2, 466);
+
+  /* battery (left) */
+  const bx=115, by=496, bw=135, bh=54;
+  ctx.lineWidth = 5; ctx.strokeStyle = T.b1; ctx.strokeRect(bx,by,bw,bh);
+  ctx.fillStyle = T.b1; ctx.fillRect(bx+bw,by+17,12,bh-34);
+  ctx.fillStyle = T.b2; ctx.fillRect(bx+6,by+6,(bw-12)*pct/100,bh-12);
+  ctx.fillStyle = '#854F6C'; ctx.font = '700 20px Cairo'; ctx.fillText('شحن المعرفة 🔋', bx+bw/2+6, by+bh+30);
+
+  /* gauge (center) */
+  const cx=W/2, cy=546, r=62, a=Math.PI+Math.PI*pct/100;
+  ctx.lineCap = 'round'; ctx.lineWidth = 16;
+  ctx.strokeStyle = '#F1D5CF'; ctx.beginPath(); ctx.arc(cx,cy,r,Math.PI,2*Math.PI); ctx.stroke();
+  if(pct>0){ ctx.strokeStyle = T.b1; ctx.beginPath(); ctx.arc(cx,cy,r,Math.PI,a); ctx.stroke(); }
+  ctx.strokeStyle = '#190019'; ctx.lineWidth = 5;
+  ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+(r-18)*Math.cos(a), cy+(r-18)*Math.sin(a)); ctx.stroke();
+  ctx.fillStyle = '#190019'; ctx.beginPath(); ctx.arc(cx,cy,9,0,7); ctx.fill(); ctx.lineCap = 'butt';
+  ctx.fillStyle = '#854F6C'; ctx.font = '600 16px Outfit'; ctx.fillText('0', cx-r, cy+24); ctx.fillText('100', cx+r, cy+24);
+  ctx.fillStyle = '#190019'; ctx.font = '800 30px Outfit'; ctx.fillText(pct+'%', cx, cy+38);
+
+  /* stamp (right) */
+  ctx.save(); ctx.translate(W-185,536); ctx.rotate(-.22);
+  ctx.strokeStyle = T.b1; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(0,0,60,0,7); ctx.stroke();
+  ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(0,0,51,0,7); ctx.stroke();
+  bolt(0,-20,15,T.b1);
+  ctx.fillStyle = T.b1; ctx.font = '900 19px Cairo'; ctx.fillText('معتمد من', 0, 8);
+  ctx.font = '900 15px Cairo'; ctx.fillText('هيئة الفولت', 0, 29);
+  ctx.restore();
+
+  /* funny line + date */
+  ctx.fillStyle = '#190019'; fit(line, 800, '700', 'Cairo', 30, 18); ctx.fillText(line, W/2, 628);
+  ctx.fillStyle = '#854F6C'; ctx.font = '600 18px Cairo'; ctx.fillText(dateStr, W/2, 650);
+
+  document.getElementById('downloadCert').href = cv.toDataURL('image/png');
+}
+
+/* ================= CONFETTI ================= */
+function launchConfetti(){
+  const c = document.getElementById('confettiCanvas');
+  const ctx = c.getContext('2d');
+  c.width = innerWidth; c.height = innerHeight; c.style.display='block';
+  const colors = ['#522B5B','#854F6C','#DFB6B2','#2B124C','#190019','#C98A8E'];
+  const pieces = [];
+  for(let i=0;i<220;i++){
+    pieces.push({x:Math.random()*c.width, y:-30-Math.random()*c.height*.6,
+      w:6+Math.random()*9, h:8+Math.random()*12, color:colors[i%colors.length],
+      vy:2+Math.random()*3.5, vx:-2+Math.random()*4, rot:Math.random()*Math.PI, vr:-.12+Math.random()*.24});
+  }
+  let frames=0;
+  (function tick(){
+    ctx.clearRect(0,0,c.width,c.height);
+    let alive=false;
+    pieces.forEach(p=>{
+      p.y+=p.vy; p.x+=p.vx; p.rot+=p.vr;
+      if(p.y<c.height+30) alive=true;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot);
+      ctx.fillStyle=p.color; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      ctx.restore();
+    });
+    frames++;
+    if(alive && frames<700) requestAnimationFrame(tick);
+    else{ ctx.clearRect(0,0,c.width,c.height); c.style.display='none'; }
+  })();
+}
+
+/* ================= RETAKE ================= */
+function retakeExam(){
+  document.getElementById('ringFg').style.strokeDashoffset = 327;
+  startExam();
+}
+
+/* ================= BUBBLES ================= */
+(function(){
+  const box = document.getElementById('bubbles');
+  for(let i=0;i<14;i++){
+    const b = document.createElement('div');
+    b.className='bubble';
+    const size = 30+Math.random()*90;
+    b.style.width = b.style.height = size+'px';
+    b.style.left = Math.random()*100+'%';
+    b.style.animationDuration = 14+Math.random()*18+'s';
+    b.style.animationDelay = -Math.random()*20+'s';
+    box.appendChild(b);
+  }
+})();
+</script>
+</body>
+</html>
